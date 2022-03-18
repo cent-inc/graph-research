@@ -18,7 +18,7 @@ const chainId = 1; // Ethereum network id
 const name = 'Ethereum';
 
 // This infura key gets 100k requests/day
-const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/89e7c064178740e4b5d4740658ef749e', {
+const provider = new ethers.providers.StaticJsonRpcProvider('https://mainnet.infura.io/v3/89e7c064178740e4b5d4740658ef749e', {
     name,
     chainId
 });
@@ -28,29 +28,35 @@ const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io
     let apiCalls = 0;
     let nftTransferCount = 0;
     let startBlock = 0;
-    let increment = 1000000; // 1 million blocks;
+    let increment = 1000; // 1 million blocks;
     const currentBlock = await provider.getBlockNumber();
     while (startBlock < currentBlock) {
         try {
             const endBlock = Math.min(startBlock + increment, currentBlock);
-            if (++apiCalls % 1000 == 0) {
+            if (++apiCalls % 100000 == 0) {
                 console.log('API Calls: ', apiCalls);
             }
             const logs = await provider.getLogs({
-                topics: [erc721Interface.getEventTopic('Transfer(address indexed, address indexed, uint256 indexed)')],
+                topics: [
+                    erc721Interface.getEventTopic('Transfer(address indexed, address indexed, uint256 indexed)'),
+                    null,
+                    null,
+                    null
+                ],
                 fromBlock: startBlock,
                 toBlock: endBlock
             });
+
             console.log('From block: ', startBlock, ' To Block: ', endBlock);
             startBlock = endBlock + 1;
-            increment = Math.floor(increment + (increment / 10));
+            increment = Math.floor(increment + (increment / 10)); // Increase range by 10% on successful scan
             const nftTransfers = logs.filter(l => l.topics.length == 4);
             console.log('New transfer events (including ERC20 transfers): ', logs.length);
             console.log('New ERC721 transfer events', nftTransfers.length);
             nftTransferCount += nftTransfers.length;
         }
         catch (e) {
-            const newIncrement = Math.ceil(increment / 2);
+            const newIncrement = Math.ceil(increment / 2); // Decrease range by 50% on failed scan
             console.log('Interval too high, halving range to: ', newIncrement, startBlock);
             increment = newIncrement;
         }
