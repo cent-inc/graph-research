@@ -1,5 +1,9 @@
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.join(__dirname, '.env') });
+
 const { createAlchemyWeb3 } = require('@alch/alchemy-web3');
-const web3 = createAlchemyWeb3('https://eth-mainnet.alchemyapi.io/v2/s2JeBN6N9XdRi-F-fT49GpZ5mM-ooiyu'); // API key is on "Growth" plan
+const web3 = createAlchemyWeb3(process.env.ALCHEMY_HTTP_ENDPOINT); // API key is on "Growth" plan
 
 const zeroTokenId = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const startTime = (new Date().getTime()) / 1000;
@@ -11,7 +15,7 @@ let pageKey = undefined;
     while (true) {
         ++apiCalls;
         const results = await web3.alchemy.getAssetTransfers({
-            "fromBlock": "0x0",
+            "fromBlock": 8946631, // 'crapped out at 8:29'
             "toBlock": "latest",
             "excludeZeroValue": false,
             "category": [
@@ -40,3 +44,8 @@ let pageKey = undefined;
 const wait = () => setTimeout(wait, 1000);
 wait();
 
+// 8:17 AM- started
+// XFERS: 1932951      BLOCKS:7612552      CALLS:1934
+// XFERS: 10581229      BLOCKS:8946631      CALLS:10582
+
+// 8:29 AM- crapped out 7612552

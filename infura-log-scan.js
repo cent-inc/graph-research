@@ -1,3 +1,7 @@
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.join(__dirname, '.env') });
+
 const ethers = require('ethers');
 const erc721Interface = new ethers.utils.Interface([
     'event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId)',
@@ -18,7 +22,7 @@ const chainId = 1; // Ethereum network id
 const name = 'Ethereum';
 
 // This infura key gets 100k requests/day
-const provider = new ethers.providers.StaticJsonRpcProvider('https://mainnet.infura.io/v3/89e7c064178740e4b5d4740658ef749e', {
+const provider = new ethers.providers.StaticJsonRpcProvider(process.env.INFURA_HTTP_ENDPOINT, {
     name,
     chainId
 });
