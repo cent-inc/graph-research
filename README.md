@@ -6,7 +6,7 @@
 
 -> start local jaccard-scoring server
 
-You can then lookup any address's score at http://localhost:3030/0xaddress. The top 250 matches will be returned.
+You can then lookup any address's score at http://localhost:3030/ADDRESS. The top 250 matches will be returned.
 
 Make sure to set up the data first, as outlined below:
 
